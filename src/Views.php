@@ -6,7 +6,7 @@ class Views
 {
     // ...
 	public $layouts = [];
-    static $core_path = __DIR__ . "/../App/Views/";
+    static $core_path = ROOT_DIR . "App/Views/";
 
     static public $stylesheets = [];
     static public $scripts = [];
