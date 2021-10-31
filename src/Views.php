@@ -6,8 +6,7 @@ class Views
 {
     // ...
 	public $layouts = [];
-    static $core_path = ROOT_DIR . "App/Views/";
-
+    static $core_path = BOULETAP_APP_DIR . "Views/";
     static public $stylesheets = [];
     static public $scripts = [];
     static public $scripts_head = [];
