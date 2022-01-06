@@ -4,17 +4,31 @@ namespace BouletAP\Framework;
 
 class Views
 {
-    // ...
-	public $layouts = [];
-    static $core_path = BOULETAP_APP_DIR . "Views/";
+
+    static public $extra_metas = [];
     static public $stylesheets = [];
-    static public $scripts = [];
-    static public $scripts_head = [];
-    
+    static public $scripts_head = [];    
+
+    static public $scripts_footer = [];
+        
+    static public $content = "";
     static public $data = [];
+
+    static public $body_classes = "";
+    static public $header_custom_before = [];
+    static public $header_custom_after = [];
+
 
     static public function add_data($var, $value) {
         self::$data[$var]= $value;
+    }
+
+    static public function set_meta($name, $content, $prio = 10) {
+        self::$extra_metas []= array(
+            'name' => $name,
+            'content' => $content,
+            'priority' => $prio
+        );
     }
 
     static public function enqueue_style($url, $media = false) {
@@ -30,57 +44,27 @@ class Views
             self::$scripts_head []= $url;
         }
         else {
-            self::$scripts []= $url;
+            self::$scripts_footer []= $url;
         }
     }
 
-    static public function display($name, $layout = 'default') {
 
-
-        $output = "";
-        $resources_url = '/Ressources/';
-
-
+    static public function display($name) {
+        self::$content = $name;
         ob_start();
-        if( $layout == 'default' ) {
-            include(self::$core_path . "Layouts/header-default.php");
-            include(self::$core_path . "{$name}.php");
-            include(self::$core_path . "Layouts/footer-default.php");
-        }
-        else {
-
-            // admin part
-            self::enqueue_style($resources_url.'css/style.css');
-            self::enqueue_style($resources_url.'css/cocoon.css');
-            self::enqueue_style($resources_url.'css/style-child.css');
-            self::enqueue_style($resources_url.'css/easy-pie-chart.css');
-            self::enqueue_script($resources_url.'js/jquery-3.2.1.min.js', 'head'); 
-
-            
-            self::enqueue_script($resources_url.'js/perfect-scrollbar.jquery.min.js'); 
-            self::enqueue_script($resources_url.'js/waves.js'); 
-            self::enqueue_script($resources_url.'js/sidebarmenu.js'); 
-            self::enqueue_script($resources_url.'js/custom.js'); 
-
-
-            //include($core_path . 'Layouts/header.php');
-            include(self::$core_path . "{$name}.php");
-            //include($core_path . 'Layouts/footer.php');
-        }
+        include(__DIR__."/BaseLayout.php");
         $output = ob_get_clean();
-
         echo $output;
     }
-    
-    static public function get_header() {
-        include(self::$core_path . 'Layouts/header.php');
-    }
 
-    static public function get_footer() {
-        include(self::$core_path . 'Layouts/footer.php');
-    }
 
     static public function get_part($name) {
-        include(self::$core_path . "Partials/{$name}.php");
-    }
+        include(APP_PATH . "/{$name}.php");
+    }   
+
+    static public function get_partial($name) {
+        include(APP_PATH . "/Views/partials/{$name}.php");
+
+        // use composite pattern to traverse modules partials ?
+    }   
 }
