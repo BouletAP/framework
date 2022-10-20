@@ -3,20 +3,38 @@
 namespace BouletAP\Framework;
 
 
-class Routes {
+class Router {
 
     static public $routes = [];
 
-    static public function add($name, $module) {
 
-        $route = new Route($name, $module);
+    static public function routes_from_modules($root) {
 
-        
-        if( empty($route->module) ) {
-            $route->module = 'BouletAP';
+        // Get routes for extensions from database.
+        // foreach( scandir($root) as $module ) {
+        //     if( is_dir($root."/".$module) ) {
+        //         $module_routes = $root."/".$module."/routes.php";
+        //         if( file_exists($module_routes) ) 
+        //             require_once($module_routes);      
+        //     }
+        // }
+
+
+        foreach( scandir($root) as $module ) {
+            if( is_dir($root."/".$module) ) {
+                $module_routes = $root."/".$module."/routes.php";
+                if( file_exists($module_routes) ) 
+                    require_once($module_routes);      
+            }
         }
+    }
 
-        self::$routes[$route->path] = array(
+
+    static public function add($name, $callback, $module = 'App') {
+
+        $route = new Route($name, $callback, $module);
+
+        self::$routes[$route->url] = array(
             "module" => $route->module,
             "controller" => $route->controller,
             "page" => $route->method
@@ -24,7 +42,7 @@ class Routes {
     }
 
 
-    static public function getByContext($base_path) {
+    static public function getByContext($base_path = false) {
         $route = false;
 
         //echo '<pre>'; print_r($_SERVER); echo '</pre>'; die();
@@ -51,10 +69,17 @@ class Routes {
             $route = self::$routes[$request_uri];
         }      
         else {
-            $route = Routes::$routes['/'];
+            $route = Router::$routes['/'];
         }
+        
         return $route;
     }
     
+
+    static public function redirect($to, $headers = false) {
+        if( $to === "/" ) $to = "";
+        header('Location: '.ROOT_URL.$to);
+        die();
+    }
     
 }

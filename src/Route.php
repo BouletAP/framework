@@ -6,24 +6,23 @@ namespace BouletAP\Framework;
 
 class Route {
 
-    public $path;
+    public $url;
 
     public $module;
     public $controller;
     public $method;
 
-    public function __construct($name, $module) {        
-        $this->path = $name;
-        $parts = explode('@', $module);
-        if( count($parts) > 2 ) {
-            $this->module = $parts[0];
-            $this->controller = $parts[1];
-            $this->method = $parts[2];
+    public function __construct($name, $callback, $module) {        
+        $this->url = $name;
+
+        $module = str_replace('/', '\\', $module);
+        $parts = explode('@', $callback);
+        if( !count($parts) == 2 ) {
+            return false;
         }
-        else {
-            $this->controller = $parts[0];
-            $this->method = $parts[1];
-        }
+        $this->module = $module;
+        $this->controller = $parts[0];
+        $this->method = $parts[1];
     }    
     
 }
